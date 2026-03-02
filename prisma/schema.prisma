@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Tabela de Concursos (Ex: Banco do Brasil 2024)
+model Concurso {
+  id            String   @id @default(uuid())
+  nome          String
+  banca         String   // Ex: FGV, Cebraspe
+  dataProva     DateTime?
+  linkEdital    String?
+  ativo         Boolean  @default(true)
+  
+  cargos        Cargo[]  // Relacionamento: Um concurso tem muitos cargos
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("concursos") // Define o nome da tabela no banco como minúsculo
+}
+
+// 2. Tabela de Cargos/Regiões (Ex: Escriturário - SP)
+model Cargo {
+  id            String   @id @default(uuid())
+  nome          String
+  vagasAmpla    Int      @default(0)
+  vagasCotas    Int      @default(0)
+  totalVagas    Int      @default(0)
+  
+  concursoId    String
+  concurso      Concurso @relation(fields: [concursoId], references: [id], onDelete: Cascade)
+  
+  notas         Nota[]   // Relacionamento: Um cargo tem muitas notas
+  createdAt     DateTime @default(now())
+
+  @@map("cargos")
+}
+
+// 3. Tabela de Usuários
+model Usuario {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  nome          String?
+  senhaHash     String
+  
+  notas         Nota[]   // Relacionamento: Um usuário pode postar notas em provas diferentes
+  createdAt     DateTime @default(now())
+
+  @@map("usuarios")
+}
+
+// 4. Tabela de Notas (Onde o ranking acontece)
+model Nota {
+  id              String   @id @default(uuid())
+  valor           Float    // A nota final do candidato
+  tipoCota        TipoCota @default(AMPLA)
+  
+  usuarioId       String
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  
+  cargoId         String
+  cargo           Cargo    @relation(fields: [cargoId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Regra de Ouro: Um usuário só pode cadastrar UMA nota por cargo
+  @@unique([usuarioId, cargoId])
+  @@map("notas")
+}
+
+// Opções de concorrência
+enum TipoCota {
+  AMPLA
+  NEGROS
+  PCD
+  INDIGENA
+}
