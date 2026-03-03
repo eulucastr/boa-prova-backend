@@ -70,11 +70,18 @@ model Usuario {
   id              String   @id @default(uuid())
   email           String   @unique
   nome            String   @unique
-  senha_hash      String   
+  senha_hash      String?  // Opcional para usuários OAuth
+  
+  // OAuth fields
+  oauth_provider  String?  // "google", "github", etc.
+  oauth_id        String?  // ID único do provider OAuth
+  avatar_url      String?  // URL do avatar do usuário
 
   registros       Registro[] 
   created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt
 
+  @@unique([oauth_provider, oauth_id])
   @@map("usuarios")
 }
 
