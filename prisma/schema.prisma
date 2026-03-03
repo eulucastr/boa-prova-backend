@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -23,6 +23,7 @@ model Concurso {
   data_resultado    DateTime?
   link_edital       String?
   link_pagina       String?
+  orgao             String
   fase              Fase     @default(INSCRICOES)
   
   banca_id          String
@@ -52,8 +53,18 @@ model Cargo {
   
   concurso_id    String
   concurso       Concurso @relation(fields: [concurso_id], references: [id], onDelete: Cascade)
-  localidade     String
-  materias       String[]
+  estado         String
+  cidade         String
+  regiao         String
+  materias       Json[]
+  // materias é um array de JSONs, onde cada JSON representa uma matéria e seus detalhes, por exemplo:
+  // [
+  //   {
+  //     "nome": "Matemática",
+  //     "peso": 2,
+  //     "questoes": 15
+  //   }
+  // ]
 
   registros      Registro[]
   created_at     DateTime @default(now())
