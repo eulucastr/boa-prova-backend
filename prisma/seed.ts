@@ -1,6 +1,12 @@
+import "dotenv/config";
 import { PrismaClient, Fase, Participacao } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient()
+const adapater = new PrismaPg({
+  connectionStirng: process.env.DATABASE_URL
+})
+
+const prisma = new PrismaClient({ adapter: adapater })
 
 async function main() {
   console.log('🌱 Iniciando semeadura de dados...')

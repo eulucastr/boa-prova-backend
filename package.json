@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/eulucastr/boa-prova-backend#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
-    "fastify": "^5.7.4"
+    "fastify": "^5.7.4",
+    "pg": "^8.19.0"
   },
   "devDependencies": {
     "@types/node": "^25.3.3",
