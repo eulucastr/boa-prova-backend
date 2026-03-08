@@ -1,8 +1,13 @@
 import fastify, { type FastifyInstance } from 'fastify'
+import { usuarioRoutes } from './routes/usuario.routes.js'
 
 const app: FastifyInstance = fastify({
   logger: true
 }) 
+
+app.register(usuarioRoutes, {
+  prefix: '/usuarios'
+})
 
 app.listen({
   port: 3333
