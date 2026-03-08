@@ -1,0 +1,40 @@
+{
+  "name": "boa-prova-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eulucastr/boa-prova-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/eulucastr/boa-prova-backend/issues"
+  },
+  "homepage": "https://github.com/eulucastr/boa-prova-backend#readme",
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "@types/pg": "^8.18.0",
+    "prisma": "^7.4.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.8.2",
+    "pg": "^8.20.0"
+  }
+}
