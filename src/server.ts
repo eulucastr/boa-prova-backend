@@ -1,5 +1,5 @@
 import fastify, { type FastifyInstance } from 'fastify'
-import { usuarioRoutes } from './routes/usuario.routes.js'
+import { usuarioRoutes } from './routes/usuario.route.js'
 import swaggerPlugin from './plugins/swagger.plugin.js'
 import corsPlugin from './plugins/cors.plugin.js'
 import oauthPlugin from './plugins/oauth.plugin.js'

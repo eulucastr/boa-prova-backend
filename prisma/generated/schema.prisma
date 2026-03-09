@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Concurso {
+  id              String    @id @default(uuid())
+  nome            String
+  data_publicacao DateTime?
+  data_inscricao  DateTime?
+  data_prova      DateTime?
+  data_gabarito   DateTime?
+  data_resultado  DateTime?
+  link_edital     String?
+  link_pagina     String?
+  orgao           String
+  fase            Fase      @default(INSCRICOES)
+
+  banca_id String
+  banca    Banca  @relation(fields: [banca_id], references: [id])
+
+  cotas         String[]
+  cargos        Cargo[]
+  versoes_prova String[]
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  @@map("concursos")
+}
+
+model Cargo {
+  id          String @id @default(uuid())
+  nome        String
+  total_vagas Int    @default(0)
+  vagas_cotas Json
+  // vagas_cotas é um JSON que armazena o número de vagas para cada cota, por exemplo:
+  // {
+  //   "cota1": 10,
+  //   "cota2": 5,
+  //   "cota3": 2
+  // }
+
+  concurso_id String
+  concurso    Concurso @relation(fields: [concurso_id], references: [id], onDelete: Cascade)
+  estado      String
+  cidade      String
+  regiao      String
+  materias    Json[]
+  // materias é um array de JSONs, onde cada JSON representa uma matéria e seus detalhes, por exemplo:
+  // [
+  //   {
+  //     "nome": "Matemática",
+  //     "peso": 2,
+  //     "questoes": 15
+  //   }
+  // ]
+
+  registros Registro[]
+  criado_em DateTime   @default(now())
+
+  @@map("cargos")
+}
+
+model Usuario {
+  id         String  @id @default(uuid())
+  email      String  @unique
+  nome       String
+  senha_hash String? // Opcional para usuários OAuth
+
+  oauth_provider String?
+  oauth_id       String?
+
+  registros     Registro[]
+  criado_em     DateTime   @default(now())
+  atualizado_em DateTime   @default(now()) @updatedAt
+
+  @@unique([oauth_provider, oauth_id])
+  @@map("usuarios")
+}
+
+model Registro {
+  id         String  @id @default(uuid())
+  usuario_id String
+  usuario    Usuario @relation(fields: [usuario_id], references: [id])
+  cota       String
+
+  respostas    String[]
+  inscricao_id String // número de inscrição oficial do usuário no concurso
+  participacao Participacao @default(OFICIAL)
+  versao_prova String
+
+  cargo_id String
+  cargo    Cargo  @relation(fields: [cargo_id], references: [id], onDelete: Cascade)
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Regra de Ouro: Um usuário só pode cadastrar UMA nota por cargo
+  @@unique([usuario_id, cargo_id])
+  @@map("notas")
+}
+
+model Banca {
+  id     String  @id @default(uuid())
+  nome   String
+  imagem String?
+
+  concursos Concurso[]
+
+  @@map("bancas")
+}
+
+enum Fase {
+  INSCRICOES
+  GABARITO_EXTRAOFICIAL
+  GABARITO_PRELIMINAR
+  GABARITO_DEFINITIVO
+  RESULTADO
+}
+
+enum Participacao {
+  OFICIAL
+  SIMULADO
+}
