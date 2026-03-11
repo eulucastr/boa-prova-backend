@@ -9,8 +9,6 @@ interface GoogleUserInfo {
 }
 
 export async function authRoutes(app: FastifyInstance) {
-
-
   // ==========================================
   // CALLBACK DO GOOGLE OAUTH
   // ==========================================
